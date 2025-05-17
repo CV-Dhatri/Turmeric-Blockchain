@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { DatePicker } from "@/components/ui/date-picker"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -21,10 +21,56 @@ const STEPS = {
   SUCCESS: 3,
 }
 
+// Define the form data type
+interface FormData {
+  // Common fields
+  fullName: string
+  role: string
+  email: string
+  phone: string
+  password: string
+  confirmPassword: string
+  govtId: string
+
+  // Farmer fields
+  farmLocation: string
+  farmSize: string
+  cropType: string
+  certification: string
+  experience: string
+
+  // Processor fields
+  processingUnitName: string
+  licenseNumber: string
+  facilityLocation: string
+  processingTypes: string
+  storageCapacity: string
+  qualityStandards: string
+  processingDate: string | null
+
+  // Distributor fields
+  distributionCompanyName: string
+  warehouseAddress: string
+  transportationMode: string
+  gstNumber: string
+  routesCovered: string
+
+  // Retailer fields
+  storeName: string
+  retailLicense: string
+  storeAddress: string
+  retailCategory: string
+
+  // Consumer fields
+  userName: string
+  location: string
+}
+
+
 export default function RegistrationForm() {
   const router = useRouter()
   const [step, setStep] = useState(STEPS.COMMON_INFO)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     // Common fields
     fullName: "",
     role: "farmer",
@@ -48,6 +94,7 @@ export default function RegistrationForm() {
     processingTypes: "",
     storageCapacity: "",
     qualityStandards: "",
+    processingDate: null,
 
     // Distributor fields
     distributionCompanyName: "",
@@ -67,7 +114,7 @@ export default function RegistrationForm() {
     location: "",
   })
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: keyof FormData, value: string | null) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -328,6 +375,16 @@ export default function RegistrationForm() {
             placeholder="e.g., ISO, HACCP"
             value={formData.qualityStandards}
             onChange={(e) => handleChange("qualityStandards", e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <DatePicker
+            id="processingDate"
+            label="Processing Date *"
+            value={formData.processingDate}
+            onChange={(value) => handleChange("processingDate", value)}
+            required
           />
         </div>
 
@@ -606,6 +663,12 @@ export default function RegistrationForm() {
                   <div>
                     <p className="text-sm text-gray-500">Quality Standards</p>
                     <p>{formData.qualityStandards}</p>
+                  </div>
+                )}
+                {formData.processingDate && (
+                  <div>
+                    <p className="text-sm text-gray-500">Processing Date</p>
+                    <p>{formData.processingDate}</p>
                   </div>
                 )}
               </div>
