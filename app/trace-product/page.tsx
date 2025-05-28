@@ -7,13 +7,13 @@ import Link from "next/link"
 import { Hexagon } from "lucide-react"
 import QRScanner from "@/components/blockchain/qr-scanner"
 import BatchDetails from "@/components/blockchain/batch-details"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function TraceProductPage() {
   const [batchId, setBatchId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showScanner, setShowScanner] = useState(true)
 
   const handleQRCodeScanned = async (data: string) => {
     try {
@@ -132,6 +132,27 @@ export default function TraceProductPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-8">
               <p>{error}</p>
+            </div>
+          )}
+
+          {!batchId && !showScanner && (
+            <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <h3 className="font-medium text-blue-800 mb-2">For Testing Purposes</h3>
+              <p className="text-sm text-blue-700 mb-2">Try these valid batch IDs:</p>
+              <div className="flex flex-wrap gap-2">
+                {["BATCH_123456", "BATCH_789012", "BATCH_345678", "BATCH_901234", "BATCH_567890"].map((id) => (
+                  <button
+                    key={id}
+                    onClick={() => setBatchId(id)}
+                    className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded hover:bg-blue-200 transition-colors"
+                  >
+                    {id}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-blue-600 mt-2">
+                Each batch ID shows different stages of the supply chain journey.
+              </p>
             </div>
           )}
 

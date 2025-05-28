@@ -94,10 +94,13 @@ export default function QRScanner({ onScan }: QRScannerProps) {
     let timeout: NodeJS.Timeout
 
     if (isScanning) {
-      // Simulate finding a QR code after 3 seconds
+      // Simulate finding a QR code after 3 seconds with a valid batch ID
+      const validBatchIds = ["BATCH_123456", "BATCH_789012", "BATCH_345678", "BATCH_901234", "BATCH_567890"]
+      const randomBatchId = validBatchIds[Math.floor(Math.random() * validBatchIds.length)]
+
       timeout = setTimeout(() => {
         stopScanning()
-        onScan("BATCH_" + Math.floor(Math.random() * 1000000).toString())
+        onScan(randomBatchId)
       }, 3000)
     }
 

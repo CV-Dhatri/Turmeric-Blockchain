@@ -92,22 +92,27 @@ export default function BatchDetails({ batchId }: BatchDetailsProps) {
   const [blockchainData, setBlockchainData] = useState<BlockchainData | null>(null)
   const [isVerified, setIsVerified] = useState<boolean | null>(null)
 
+  // Define valid batch IDs for demo purposes
+  const VALID_BATCH_IDS = ["BATCH_123456", "BATCH_789012", "BATCH_345678", "BATCH_901234", "BATCH_567890"]
+
   useEffect(() => {
     const fetchBatchData = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
-        // In a real app, you would fetch from your API
-        // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blockchain/batch/${batchId}`)
-        // if (!response.ok) throw new Error('Failed to fetch batch data')
-        // const data = await response.json()
+        // Check if batch ID is valid
+        if (!VALID_BATCH_IDS.includes(batchId)) {
+          throw new Error(
+            `Batch ID "${batchId}" not found in blockchain records. Please verify the batch ID and try again.`,
+          )
+        }
 
-        // For demo purposes, we'll simulate API response with mock data
-        await new Promise((resolve) => setTimeout(resolve, 1500)) // Simulate network delay
+        // Simulate network delay
+        await new Promise((resolve) => setTimeout(resolve, 1500))
 
-        // Mock data based on batchId
-        const mockData = generateMockData(batchId)
+        // Generate mock data only for valid batch IDs
+        const mockData = generateMockDataForValidBatch(batchId)
 
         setBatchData(mockData.batch)
         setBlockchainData(mockData.blockchain)
@@ -140,8 +145,79 @@ export default function BatchDetails({ batchId }: BatchDetailsProps) {
     )
   }
 
-  // Generate mock data for demo purposes
-  const generateMockData = (id: string) => {
+  // Generate mock data only for valid batch IDs
+  const generateMockDataForValidBatch = (id: string) => {
+    // Different data based on batch ID
+    const batchConfigs = {
+      BATCH_123456: {
+        farmer: "Rajesh Kumar",
+        farmLocation: "Sangli, Maharashtra",
+        quantity: 1000,
+        qualityGrade: "A",
+        organicCertified: true,
+        processingUnit: "Golden Spice Processing",
+        processor: "Priya Processing Unit",
+        distributor: "Swift Distributors",
+        retailer: "Fresh Mart Store",
+        currentStatus: "sold" as const,
+        price: 25.99,
+      },
+      BATCH_789012: {
+        farmer: "Sunita Devi",
+        farmLocation: "Erode, Tamil Nadu",
+        quantity: 750,
+        qualityGrade: "A+",
+        organicCertified: true,
+        processingUnit: "Premium Turmeric Mills",
+        processor: "Tamil Processing Co.",
+        distributor: "South India Distributors",
+        retailer: "Organic Bazaar",
+        currentStatus: "at_retailer" as const,
+        price: 28.5,
+      },
+      BATCH_345678: {
+        farmer: "Mohan Patil",
+        farmLocation: "Nizamabad, Telangana",
+        quantity: 1200,
+        qualityGrade: "A",
+        organicCertified: false,
+        processingUnit: "Telangana Spice Works",
+        processor: "Regional Processing Hub",
+        distributor: "Central Distributors",
+        retailer: null,
+        currentStatus: "in_transit" as const,
+        price: 22.75,
+      },
+      BATCH_901234: {
+        farmer: "Lakshmi Reddy",
+        farmLocation: "Salem, Tamil Nadu",
+        quantity: 850,
+        qualityGrade: "B+",
+        organicCertified: true,
+        processingUnit: "Salem Organic Mills",
+        processor: "Organic Processing Ltd.",
+        distributor: null,
+        retailer: null,
+        currentStatus: "processed" as const,
+        price: 24.0,
+      },
+      BATCH_567890: {
+        farmer: "Ramesh Sharma",
+        farmLocation: "Warangal, Telangana",
+        quantity: 950,
+        qualityGrade: "A",
+        organicCertified: true,
+        processingUnit: null,
+        processor: null,
+        distributor: null,
+        retailer: null,
+        currentStatus: "harvested" as const,
+        price: 0,
+      },
+    }
+
+    const config = batchConfigs[id as keyof typeof batchConfigs]
+
     const harvestDate = new Date()
     harvestDate.setMonth(harvestDate.getMonth() - 3) // 3 months ago
 
@@ -160,18 +236,7 @@ export default function BatchDetails({ batchId }: BatchDetailsProps) {
     const shelfLife = new Date()
     shelfLife.setFullYear(shelfLife.getFullYear() + 1) // 1 year shelf life
 
-    // Determine current status based on the batch ID
-    // For demo, we'll use the last digit of the ID to determine status
-    const lastDigit = Number.parseInt(id.slice(-1))
-    let currentStatus: "harvested" | "processed" | "in_transit" | "at_retailer" | "sold"
-
-    if (lastDigit < 2) currentStatus = "harvested"
-    else if (lastDigit < 4) currentStatus = "processed"
-    else if (lastDigit < 6) currentStatus = "in_transit"
-    else if (lastDigit < 8) currentStatus = "at_retailer"
-    else currentStatus = "sold"
-
-    // Create mock batch data
+    // Create batch data based on configuration
     const batch: BatchData = {
       batchId: id,
       blockchainTxHash:
@@ -180,32 +245,32 @@ export default function BatchDetails({ batchId }: BatchDetailsProps) {
           .fill(0)
           .map(() => Math.floor(Math.random() * 16).toString(16))
           .join(""),
-      currentStatus,
+      currentStatus: config.currentStatus,
       qrCode: `QR_${id}_${Date.now()}`,
       farmer: {
         userId: {
-          fullName: "Rajesh Kumar",
+          fullName: config.farmer,
           roleSpecificData: {
-            farmLocation: "Sangli, Maharashtra",
+            farmLocation: config.farmLocation,
           },
         },
-        farmLocation: "Sangli, Maharashtra",
+        farmLocation: config.farmLocation,
         harvestDate: harvestDate.toISOString(),
-        quantity: 1000,
-        qualityGrade: "A",
-        organicCertified: true,
+        quantity: config.quantity,
+        qualityGrade: config.qualityGrade,
+        organicCertified: config.organicCertified,
       },
       createdAt: harvestDate.toISOString(),
       updatedAt: new Date().toISOString(),
     }
 
     // Add processor data if status is beyond harvested
-    if (currentStatus !== "harvested") {
+    if (config.currentStatus !== "harvested" && config.processingUnit) {
       batch.processor = {
         userId: {
-          fullName: "Priya Processing Unit",
+          fullName: config.processor!,
           roleSpecificData: {
-            processingUnitName: "Golden Spice Processing",
+            processingUnitName: config.processingUnit,
           },
         },
         processingDate: processingDate.toISOString(),
@@ -226,12 +291,12 @@ export default function BatchDetails({ batchId }: BatchDetailsProps) {
     }
 
     // Add distributor data if status is beyond processed
-    if (currentStatus !== "harvested" && currentStatus !== "processed") {
+    if (config.currentStatus !== "harvested" && config.currentStatus !== "processed" && config.distributor) {
       batch.distributor = {
         userId: {
-          fullName: "Swift Distributors",
+          fullName: config.distributor,
           roleSpecificData: {
-            distributionCompanyName: "Swift Spice Distributors",
+            distributionCompanyName: config.distributor,
           },
         },
         pickupDate: pickupDate.toISOString(),
@@ -242,40 +307,40 @@ export default function BatchDetails({ batchId }: BatchDetailsProps) {
     }
 
     // Add retailer data if status is at_retailer or sold
-    if (currentStatus === "at_retailer" || currentStatus === "sold") {
+    if ((config.currentStatus === "at_retailer" || config.currentStatus === "sold") && config.retailer) {
       batch.retailer = {
         userId: {
-          fullName: "Fresh Mart Store",
+          fullName: config.retailer,
           roleSpecificData: {
-            storeName: "Fresh Mart Organic Store",
+            storeName: config.retailer,
           },
         },
         receivedDate: receivedDate.toISOString(),
         shelfLife: shelfLife.toISOString(),
-        price: 25.99,
+        price: config.price,
         storeLocation: "Pune, Maharashtra",
       }
     }
 
-    // Create mock blockchain data
+    // Create blockchain data
     const blockchain: BlockchainData = {
       batchId: id,
-      farmLocation: "Sangli, Maharashtra",
+      farmLocation: config.farmLocation,
       harvestDate: harvestDate,
-      quantity: 1000,
+      quantity: config.quantity,
       farmer: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
-      status: ["harvested", "processed", "in_transit", "at_retailer", "sold"].indexOf(currentStatus),
+      status: ["harvested", "processed", "in_transit", "at_retailer", "sold"].indexOf(config.currentStatus),
     }
 
     // Add processing data to blockchain if applicable
-    if (currentStatus !== "harvested") {
+    if (config.currentStatus !== "harvested") {
       blockchain.processingMethod = "Steam drying"
       blockchain.processingDate = processingDate
       blockchain.processor = "0x8ba1f109551bD432803012645Hac136c30C6756"
     }
 
     // Add distribution data to blockchain if applicable
-    if (currentStatus !== "harvested" && currentStatus !== "processed") {
+    if (config.currentStatus !== "harvested" && config.currentStatus !== "processed") {
       blockchain.transportMethod = "Refrigerated truck"
       blockchain.pickupDate = pickupDate
       blockchain.distributor = "0x617F2E2fD72FD9D5503197092aC168c91465E7f2"

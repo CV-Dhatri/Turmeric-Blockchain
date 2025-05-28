@@ -219,6 +219,27 @@ export default function ConsumerDashboard() {
           </div>
         )}
 
+        {!batchId && !showScanner && (
+          <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <h3 className="font-medium text-blue-800 mb-2">For Testing Purposes</h3>
+            <p className="text-sm text-blue-700 mb-2">Try these valid batch IDs:</p>
+            <div className="flex flex-wrap gap-2">
+              {["BATCH_123456", "BATCH_789012", "BATCH_345678", "BATCH_901234", "BATCH_567890"].map((id) => (
+                <button
+                  key={id}
+                  onClick={() => setBatchId(id)}
+                  className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded hover:bg-blue-200 transition-colors"
+                >
+                  {id}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-blue-600 mt-2">
+              Each batch ID shows different stages of the supply chain journey.
+            </p>
+          </div>
+        )}
+
         {batchId && !isLoading && !error && (
           <div className="mb-8">
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
