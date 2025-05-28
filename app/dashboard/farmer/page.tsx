@@ -7,7 +7,6 @@ import { Plus } from "lucide-react"
 
 const menuItems = [
   { label: "Add Harvest", href: "/dashboard/farmer" },
-  { label: "Harvest History", href: "/dashboard/farmer/history" },
   { label: "Blockchain Record Status", href: "/dashboard/farmer/blockchain" },
 ]
 
@@ -23,7 +22,7 @@ export default function FarmerDashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <h2 className="text-2xl font-bold mb-4">Harvest History</h2>
+            <h2 className="text-2xl font-bold mb-4">Recent Activity</h2>
             <Card className="h-[350px] bg-[#fdf6e9]/50 border border-[#e7e0d0]"></Card>
           </div>
 

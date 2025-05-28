@@ -36,12 +36,18 @@ export default function Home() {
             <p className="text-xl text-[#333333] max-w-lg">
               Ensure the provenance and authenticity of turmeric with blockchain technology
             </p>
-            <div>
+            <div className="flex flex-wrap gap-4">
               <Link
                 href="/login"
                 className="inline-block px-8 py-4 bg-[#d4a017] text-white font-medium rounded-md hover:bg-[#c29016] transition-colors"
               >
                 Get Started
+              </Link>
+              <Link
+                href="/trace-product"
+                className="inline-block px-8 py-4 bg-white text-[#333333] font-medium rounded-md border border-gray-300 hover:bg-gray-50 transition-colors"
+              >
+                Trace Product
               </Link>
             </div>
           </div>
