@@ -36,7 +36,7 @@ export default function DashboardLayout({ role, menuItems, children }: Dashboard
             Trace Product
           </Link>
           <Link href="/login" className="text-[#333333] hover:text-[#d4a017] transition-colors">
-            Login
+            Login Wallet
           </Link>
         </nav>
       </header>
